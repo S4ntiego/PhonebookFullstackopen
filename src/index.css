@@ -1,0 +1,32 @@
+h1 {
+    color: green;
+    font-style: italic;
+}
+
+.person {
+    color: grey;
+    padding-top: 3px;
+    font-size: 15px;
+}
+
+.added {
+    border-size: 5px;
+    border-style: solid;
+    color: green;
+    background: lightgrey;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border-color: green;
+}
+
+.error {
+    border-size: 5px;
+    border-style: solid;
+    color: red;
+    background: lightgrey;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border-color: red;
+}

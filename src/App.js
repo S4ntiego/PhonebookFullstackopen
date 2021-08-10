@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
+import ErrorNotification from './components/ErrorNotification'
+import Notification from './components/Notification'
 import Persons from '../src/components/Persons'
 import PeopleAdd from '../src/components/PeopleAdd'
 import contactsService from '../src/services/contacts'
@@ -16,6 +18,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ personsFilter, setPersonsFilter ] = useState('')
+  const [ addedMessage, setAddedMessage ] = useState(null)
+  const [ errorMessage, setErrorMessage ] = useState(null)
 
   const personsNames = persons.map((person) => { return person.name })
 
@@ -57,6 +61,7 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.map(person => person.id !== personObject.id ? person : returnedPerson)
         )})
+        .catch(error => setErrorMessage(`Information of ${personObject.name} has already been removed from the server`))
       }
     } else {
     contactsService.create(personObject)
@@ -64,6 +69,7 @@ const App = () => {
       setPersons(persons.concat(returnedNote)))
       setNewName('')
       setNewNumber('')
+      setAddedMessage(`Added ${personObject.name}`)
     }
   }
 
@@ -74,11 +80,13 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
+      <ErrorNotification message={errorMessage}/>
+      <Notification message={addedMessage}/>
           filter shown with <input value={personsFilter} onChange={handleFilterChange}/>
-      <h2>add a new</h2>
+      <h1>add a new</h1>
       <PeopleAdd newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} submitName={submitName}/>
-      <h2>Numbers</h2>
+      <h1>Numbers</h1>
       <ul>
       <Persons persons={personsToShow} handlePersonDelete={handlePersonDelete}/>
       </ul>
