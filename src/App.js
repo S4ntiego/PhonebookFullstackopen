@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react'
 
-import axios from 'axios'
-
 import Persons from '../src/components/Persons'
 import PeopleAdd from '../src/components/PeopleAdd'
-
-
+import contactsService from '../src/services/contacts'
 
 const App = () => {
   useEffect(() => {
-    axios
-    .get('http://localhost:3001/persons')
-    .then(response =>
-      setPersons(response.data)
+    contactsService.getAll()
+    .then(initialContacts =>
+      setPersons(initialContacts)
     )
   }, [])
 
-  const [persons, setPersons] = useState([])
+  const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ personsFilter, setPersonsFilter ] = useState('')
@@ -36,6 +32,13 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+  const handlePersonDelete = (id) => {
+    if (window.confirm("Do you really want to delete that user boi?")){
+    contactsService.personDelete(id)
+    .then(setPersons(persons.filter(person => person.id !== id)))
+    }
+  }  
+
   const submitName = (event) => {
     event.preventDefault()
     const personObject = {
@@ -45,12 +48,22 @@ const App = () => {
       number: newNumber,
     }
 
+    const person = persons.find(person => person.id === personObject.id)
+    const changedPerson = { ...person, number: personObject.number }
+
     if (personsNames.includes(newName)){
-      return window.alert('Jebać Disa')
+      if (window.confirm("Such user already exists in our database, do you want to replace the old number with a new one?")){
+        contactsService.numberUpdate(personObject.id, changedPerson)
+        .then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== personObject.id ? person : returnedPerson)
+        )})
+      }
     } else {
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')
+    contactsService.create(personObject)
+    .then((returnedNote) => 
+      setPersons(persons.concat(returnedNote)))
+      setNewName('')
+      setNewNumber('')
     }
   }
 
@@ -67,7 +80,7 @@ const App = () => {
       <PeopleAdd newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} submitName={submitName}/>
       <h2>Numbers</h2>
       <ul>
-      <Persons persons={personsToShow}/>
+      <Persons persons={personsToShow} handlePersonDelete={handlePersonDelete}/>
       </ul>
       </div>
   )

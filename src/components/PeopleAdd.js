@@ -1,7 +1,6 @@
 import React from 'react'
 
 const PeopleAdd = ({handleNameChange, handleNumberChange, newName, newNumber, submitName}) => {
-console.log('xD')
 
 return (
 <div>
